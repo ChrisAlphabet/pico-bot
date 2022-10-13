@@ -1,0 +1,3 @@
+(fp_lib_table
+  (lib (name "pico-bot")(type "KiCad")(uri "C:/Hobby-Projects/pico-bot/pcb/footprints/pico-bot.pretty")(options "")(descr ""))
+)
