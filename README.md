@@ -11,4 +11,4 @@ Start code from a developer prompt so all the env variables are setup properly
 ## Notes
 Mounting holes:
 y: 30.6mm
-x: 94.6mm x
+x: 94.6mm 
