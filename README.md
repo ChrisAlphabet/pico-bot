@@ -13,4 +13,4 @@ Mounting holes:
 y: 30.6mm
 x: 94.6mm 
 
-RPI Pico - 52mm
+cargo build --target thumbv7m-none-eabi
