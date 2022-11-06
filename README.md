@@ -12,3 +12,5 @@ Start code from a developer prompt so all the env variables are setup properly
 Mounting holes:
 y: 30.6mm
 x: 94.6mm 
+
+RPI Pico - 52mm
