@@ -15,6 +15,7 @@ use rp_pico::entry;
 
 // GPIO traits
 use embedded_hal::digital::v2::OutputPin;
+use embedded_hal::PwmPin;
 
 // Ensure we halt the program on panic (if we don't mention this crate it won't
 // be linked)
@@ -26,6 +27,12 @@ use rp_pico::hal::prelude::*;
 // A shorter alias for the Peripheral Access Crate, which provides low-level
 // register access
 use rp_pico::hal::pac;
+
+// The minimum PWM value (i.e. LED brightness) we want
+const LOW: u16 = 0;
+
+// The maximum PWM value (i.e. LED brightness) we want
+const HIGH: u16 = 25000;
 
 // A shorter alias for the Hardware Abstraction Layer, which provides
 // higher-level drivers.
@@ -69,6 +76,14 @@ fn main() -> ! {
     // The single-cycle I/O block controls our GPIO pins
     let sio = hal::Sio::new(pac.SIO);
 
+    // Init PWMs
+    let mut pwm_slices = hal::pwm::Slices::new(pac.PWM, &mut pac.RESETS);
+
+    // Configure PWM4
+    let pwm = &mut pwm_slices.pwm4;
+    pwm.set_ph_correct();
+    pwm.enable();
+
     // Set the pins up according to their function on this particular board
     let pins = rp_pico::Pins::new(
         pac.IO_BANK0,
@@ -78,13 +93,34 @@ fn main() -> ! {
     );
 
     // Set the LED to be an output
-    let mut led_pin = pins.led.into_push_pull_output();
+    // let mut led_pin = pins.led.into_push_pull_output();
 
-    // Blink the LED at 1 Hz
+    // // Blink the LED at 1 Hz
+    // loop {
+    //     led_pin.set_high().unwrap();
+    //     delay.delay_ms(500);
+    //     led_pin.set_low().unwrap();
+    //     delay.delay_ms(500);
+    // }
+
+    // Output channel B on PWM4 to the LED pin
+    let channel = &mut pwm.channel_b;
+    channel.output_to(pins.led);
+
+    // Infinite loop, fading LED up and down
     loop {
-        led_pin.set_high().unwrap();
-        delay.delay_ms(500);
-        led_pin.set_low().unwrap();
+        // Ramp brightness up
+        for i in (LOW..=HIGH).skip(100) {
+            delay.delay_us(8);
+            channel.set_duty(i);
+        }
+
+        // Ramp brightness down
+        for i in (LOW..=HIGH).rev().skip(100) {
+            delay.delay_us(8);
+            channel.set_duty(i);
+        }
+
         delay.delay_ms(500);
     }
 }
